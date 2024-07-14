@@ -1,26 +1,89 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div id="app">
+    <h1>Tienda 32 Bits</h1>
+    <h2>Lista de juegos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Stock</th>
+          <th>Precio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="juego in juegos" :key="juego.codigo">
+          <td>{{ juego.codigo }}</td>
+          <td>{{ juego.nombre }}</td>
+          <td>{{ juego.stock }}</td>
+          <td>{{ juego.precio }}</td>
+          <td>
+            <button @click="incrementStock(juego.codigo)">+</button>
+            <button @click="decrementStock(juego.codigo)">-</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { mapState, mapActions } from 'vuex';
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  computed: {
+    ...mapState({
+      juegos: state => state.juegos
+    })
+  },
+  methods: {
+    ...mapActions(['updateStock']),
+    incrementStock(codigo) {
+      const juego = this.juegos.find(j => j.codigo === codigo);
+      if (juego) {
+        // Asegurarse de que juego.stock es un número
+        this.updateStock({ codigo, newStock: parseInt(juego.stock, 10) + 1 });
+      }
+    },
+    decrementStock(codigo) {
+      const juego = this.juegos.find(j => j.codigo === codigo);
+      if (juego && juego.stock > 0) {
+        this.updateStock({ codigo, newStock: parseInt(juego.stock, 10) - 1 });
+      }
+    }
   }
-}
+};
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 50px;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+table {
+  margin: 0 auto;
+  border-collapse: collapse;
+  width: 80%;
+}
+
+table, th, td {
+  border: 1px solid black;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+}
+
+button {
+  margin: 0 5px;
+  padding: 5px 10px;
+  font-size: 1em;
 }
 </style>
